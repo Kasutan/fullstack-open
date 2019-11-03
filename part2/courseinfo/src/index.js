@@ -29,9 +29,11 @@ const Content = ({parts}) => {
 
 const Total = ({parts}) => {
 	const exercises=parts.map(part => part.exercises)
-	const reducer = (accumulator, currentValue) => accumulator + currentValue;
+	const total = exercises.reduce( (accumulator, currentValue) => {
+		return accumulator + currentValue 
+		})
 	return(
-		<p>Number of exercises {exercises.reduce(reducer)}</p>
+		<p>Number of exercises {total}</p>
 	)
 } 
 

@@ -1,11 +1,8 @@
 import React from 'react';
+import Details from './Details';
 
 
-const Details = (props) => {
-return(
-	<p>{props.name} {props.number}</p>
-)
-}
+
 const Persons = ({persons, search}) => {
 const rows = () => persons.map((person) => {
 	if(search==='' || person.name.toLowerCase().indexOf(search.toLowerCase())>=0) {

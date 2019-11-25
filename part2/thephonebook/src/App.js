@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import Persons from './Persons';
+import Persons from './components/Persons';
+import Filter from './components/Filter';
 
 
 const App = () => {
@@ -47,7 +48,7 @@ const handleSearchChange = (event) => {
 return (
 	<div>
 	<h2>Phonebook</h2>
-	<div>filter shown with: <input value={newSearch}  onChange={handleSearchChange}/></div>
+	<Filter  value={newSearch}  onChange={handleSearchChange} />
 	<form onSubmit={addName}>
 		<div>name: <input value={newName}  onChange={handleNameChange}/></div>
 		<div>number: <input value={newNumber}  onChange={handleNumberChange}/></div>

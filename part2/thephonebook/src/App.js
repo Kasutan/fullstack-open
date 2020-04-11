@@ -44,6 +44,19 @@ const addName = (event) => {
 			})
 	}
 }
+
+const deletePersonWithId = (id) => {
+	const personToDelete = persons.filter(person => person.id===id)
+	if (window.confirm(`Delete ${personToDelete[0].name}?`)) { 
+		personService
+		.deleteWithId(id)
+		.then( data => {
+			setPersons(persons.filter(person => person.id!==id))
+			}
+		)
+	}
+}
+
 const handleNameChange = (event) => {
 	setNewName(event.target.value)
 }
@@ -64,7 +77,7 @@ return (
 		<div><button type="submit">add</button></div>
 	</form>
 	<h2>Numbers</h2>
-	<Persons persons={persons} search={newSearch}/>
+	<Persons persons={persons} search={newSearch} deletePersonWithId={deletePersonWithId}/>
 	</div>
 )
 }

@@ -12,6 +12,7 @@ const [ newName, setNewName ] = useState('un nouveau nom')
 const [ newNumber, setNewNumber ] = useState('0033-')
 const [ newSearch, setNewSearch ] = useState('')
 const [ message, setMessage] = useState('bienvenue sur le phonebook')
+const [ messageType, setMessageType] = useState('info')
 
 useEffect(() => {
 	personService
@@ -47,6 +48,7 @@ const addName = (event) => {
 				setNewName('')
 				setNewNumber('')
 				setMessage(`Added ${newPerson.name}`)
+				setMessageType('info')
 				setTimeout(() => {          setMessage(null)        }, 5000)
 			})
 	} else {
@@ -58,9 +60,15 @@ const addName = (event) => {
 				setNewName('')
 				setNewNumber('')
 				setMessage(`Updated phone number for ${updatedPerson.name}`)
+				setMessageType('info')
 				setTimeout(() => {          setMessage(null)        }, 5000)
 				}
-			)
+			).catch( error => {
+				setMessage(`${changedPerson.name} was already deleted from phone book`)
+				setMessageType('error')
+				setTimeout(() => {          setMessage(null)        }, 5000)
+				setPersons(persons.filter(person => person.id !== idToUpdate))
+			})
 		}
 	}
 }
@@ -73,6 +81,7 @@ const deletePersonWithId = (id) => {
 		.then( data => {
 			setPersons(persons.filter(person => person.id!==id))
 			setMessage(`Deleted ${personToDelete[0].name}`)
+			setMessageType('info')
 			setTimeout(() => {          setMessage(null)        }, 5000)
 			}
 		)
@@ -92,7 +101,7 @@ const handleSearchChange = (event) => {
 return (
 	<div>
 	<h2>Phonebook</h2>
-	<Notification message={message} />
+	<Notification message={message} type={messageType} />
 	<Filter  value={newSearch}  onChange={handleSearchChange} />
 	<form onSubmit={addName}>
 		<div>name: <input value={newName}  onChange={handleNameChange}/></div>

@@ -12,10 +12,17 @@ code {
     monospace;
 }
 
-.info {
+.info, .error {
 	background-color: lightgrey;
-	color:green;
-	border:solid 1px green;
+
 	padding:10px;
 	margin:20px 10px;
+}
+.info {
+	color:green;
+	border:solid 1px green;
+}
+.error {
+	color:red;
+	border:solid 1px red;
 }

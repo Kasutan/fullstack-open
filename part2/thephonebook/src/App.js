@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 import Persons from './components/Persons';
 import Filter from './components/Filter';
 
@@ -12,10 +12,10 @@ const [ newNumber, setNewNumber ] = useState('0033-')
 const [ newSearch, setNewSearch ] = useState('')
 
 useEffect(() => {
-	axios
-		.get('http://localhost:3001/persons')
-		.then(response => {
-		setPersons(response.data)
+	personService
+		.getAll()
+		.then(initialBook => {
+			setPersons(initialBook)
 		})
 	}, [])
 
@@ -35,10 +35,10 @@ const addName = (event) => {
 			date: new Date().toISOString(),
 			id: persons.length+1,
 		}
-		axios
-			.post('http://localhost:3001/persons',nameObject)
-			.then(response => {
-				setPersons(persons.concat(response.data))
+		personService
+			.create(nameObject)
+			.then(newPerson => {
+				setPersons(persons.concat(newPerson))
 				setNewName('')
 				setNewNumber('')
 			})

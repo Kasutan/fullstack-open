@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import personService from './services/persons'
 import Persons from './components/Persons';
 import Filter from './components/Filter';
+import Notification from './components/Notification'
 
 
 
@@ -10,6 +11,7 @@ const [ persons, setPersons] = useState([])
 const [ newName, setNewName ] = useState('un nouveau nom')
 const [ newNumber, setNewNumber ] = useState('0033-')
 const [ newSearch, setNewSearch ] = useState('')
+const [ message, setMessage] = useState('bienvenue sur le phonebook')
 
 useEffect(() => {
 	personService
@@ -44,6 +46,8 @@ const addName = (event) => {
 				setPersons(persons.concat(newPerson))
 				setNewName('')
 				setNewNumber('')
+				setMessage(`Added ${newPerson.name}`)
+				setTimeout(() => {          setMessage(null)        }, 5000)
 			})
 	} else {
 		if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) { 
@@ -53,6 +57,8 @@ const addName = (event) => {
 				setPersons(persons.map(person => person.id!==idToUpdate ? person : updatedPerson))
 				setNewName('')
 				setNewNumber('')
+				setMessage(`Updated phone number for ${updatedPerson.name}`)
+				setTimeout(() => {          setMessage(null)        }, 5000)
 				}
 			)
 		}
@@ -66,6 +72,8 @@ const deletePersonWithId = (id) => {
 		.deleteWithId(id)
 		.then( data => {
 			setPersons(persons.filter(person => person.id!==id))
+			setMessage(`Deleted ${personToDelete[0].name}`)
+			setTimeout(() => {          setMessage(null)        }, 5000)
 			}
 		)
 	}
@@ -84,6 +92,7 @@ const handleSearchChange = (event) => {
 return (
 	<div>
 	<h2>Phonebook</h2>
+	<Notification message={message} />
 	<Filter  value={newSearch}  onChange={handleSearchChange} />
 	<form onSubmit={addName}>
 		<div>name: <input value={newName}  onChange={handleNameChange}/></div>

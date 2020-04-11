@@ -22,10 +22,13 @@ useEffect(() => {
 const addName = (event) => {
 	event.preventDefault()
 	let unique=true
+	let idToUpdate=false
+	let changedPerson=false
 	persons.forEach(function(item){
 		if(newName===item.name) {
-			alert(`${newName} is already added to phonebook`)
 			unique=false
+			idToUpdate=item.id
+			changedPerson={...item, number : newNumber}
 		}
 	})
 	if(unique) {
@@ -42,6 +45,17 @@ const addName = (event) => {
 				setNewName('')
 				setNewNumber('')
 			})
+	} else {
+		if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) { 
+			personService
+			.update(idToUpdate, changedPerson)
+			.then( updatedPerson => {
+				setPersons(persons.map(person => person.id!==idToUpdate ? person : updatedPerson))
+				setNewName('')
+				setNewNumber('')
+				}
+			)
+		}
 	}
 }
 

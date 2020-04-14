@@ -1,6 +1,7 @@
-const http = require('http') //importe le module "CommonJS" http natif de node
-//la syntaxe est différente des modules ES6 utilisés en front (import/export) mais pour notre besoin fonctionne pareil
-//En fait on va rapidement utiliser express à la place du http natif de node
+//npm install express
+const express = require('express') //plus agréable que le module http natif de node
+const app = express()
+//express est une fonction utilisée pour créer une application express stockée dans la variable app
 
 let notes = [{
 	id: 1,
@@ -19,17 +20,46 @@ let notes = [{
 	important: true
 }]
 
-const app = http.createServer((request, response) => {
-	//lie un event handler au serveur
-	//ponse = réponse renvoyée à chaque requête HTTP faite au serveur
-
-	response.writeHead(200, {
-		'Content-Type': 'application/json'
-	})
-	response.end(JSON.stringify(notes))
+//on définit une route (un event handler) qui répond aux requêtes HTTP GET adressées à la racine
+app.get('/', (req, res) => {
+	res.send('<h1>Hello World!</h1>')
+	//à noter : utilisation de la méthode send de l'objet réponse
+	//cette méthode identifie qu'on envoie une chaine, et envoie les en-têtes appropriées (cf. F12 / onglet réseau)
 })
 
-const port = 3001
-app.listen(port)
-//lie le serveur à un port - pour savoir quelles requêtes HTTP écouter
-console.log(`Server running on port ${port}`)
+//on définit une autre route (un event handler) qui répond aux requêtes HTTP GET adressées au chemin /api/notes
+app.get('/api/notes', (req, res) => {
+	res.json(notes)
+	//ici, on utilise la méthode json, express adapte l'en-tête Content-Type, et "stringify" notre objet JS
+})
+
+//on peut ajouter des paramètres dans les routes avec ":" (syntaxe express)
+app.get('/api/notes/:id', (request, response) => {
+	//l'id de la note demandée se trouve en paramètre de la requête
+	const id = Number(request.params.id)
+	//attention le paramètre est de type string ! Il faut le convertir en nombre sinon le test de find renverra toujours false
+	const note = notes.find(note => note.id === id)//on retrouve la note avec l'id demandé - on est côté serveur, on a accès à l'objet notes ! 
+	if(note) {
+		//la note est renvoyée au demandeur au format json, si elle existe ! (si elle n'existe pas, note est undefined)
+		response.json(note) 
+	} else {
+		//sinon on renvoit une réponse avec un statut 404
+		// la méthode end() permet de répondre à la requête sans donnée
+		response.status(404).end()
+	}
+})
+
+//création d'une route pour effacer une ressource
+app.delete('/api/notes/:id', (request, response) => {
+	const id= Number(request.params.id)
+	//on retire la note dont l'id correspond au paramètre de la requête de l'objet note
+	//on est toujours côté serveur, on peut agir directement sur l'objet note
+	notes = notes.filter(note => note.id !== id)
+	//statut 204 : "pas de contenu" + end() pour répondre sans données
+	response.status(204).end()
+})
+
+const PORT = 3001
+app.listen(PORT, () => {
+console.log(`Server running on port ${PORT}`)
+})

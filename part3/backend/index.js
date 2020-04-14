@@ -6,6 +6,16 @@ const app = express()
 //on va utiliser le parser json de express pour accéder aux données envoyées avec une requête POST
 app.use(express.json())
 
+//Notre propre fonction middle ware
+const requestLogger = (request, response, next) => {
+	console.log('Method:', request.method)
+	console.log('Path:  ', request.path)
+	console.log('Body:  ', request.body)
+	console.log('---')
+	next() // passe la main à la fonction middleware suivante
+}
+app.use(requestLogger) // doit être appelée après json sinon request.body est vide
+
 let notes = [{
 	id: 1,
 	content: "HTML is easy",
@@ -97,6 +107,13 @@ app.post('/api/notes', (request, response) => {
 	notes = notes.concat(note)
 	response.json(note)
 })
+
+//cas particulier d'une fonction middleware appelée après les routes : permet d'attraper les requêtes vers des routes qui n'existent pas
+const unknownEndpoint = (request, response) => {
+	response.status(404).send({ error: 'unknown endpoint' })
+}
+	
+app.use(unknownEndpoint)
 
 const PORT = 3001
 app.listen(PORT, () => {

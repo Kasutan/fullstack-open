@@ -3,6 +3,9 @@ const express = require('express') //plus agréable que le module http natif de 
 const app = express()
 //express est une fonction utilisée pour créer une application express stockée dans la variable app
 
+//on va utiliser le parser json de express pour accéder aux données envoyées avec une requête POST
+app.use(express.json())
+
 let notes = [{
 	id: 1,
 	content: "HTML is easy",
@@ -57,6 +60,42 @@ app.delete('/api/notes/:id', (request, response) => {
 	notes = notes.filter(note => note.id !== id)
 	//statut 204 : "pas de contenu" + end() pour répondre sans données
 	response.status(204).end()
+})
+
+const generateId = () => {
+	const maxId = notes.length > 0
+		? Math.max(...notes.map(n => n.id)) //l'opérateur ... permet de convertir l'objet renvoyé par map en un tableau simple que Math.max accepte
+		: 0
+	return maxId + 1
+}
+
+//route pour ajouter des ressources
+app.post('/api/notes', (request, response) => {
+	//utile pour le débug : console.log(request.headers)
+
+	//la propriété body est accessible parce qu'on utilise le parseur json de express. Il prend les données de la requête au format json, les convertit en objet JS, place cet objet dans body PUIS exécute la fonction gestionnaire de route
+	const body = request.body
+
+	//vérifier qu'il y a un contenu
+	if(!body.content) {
+		//ne pas oublier return, sinon le reste du code est exécuté
+		return response.status(400).json({
+			error : 'content missing'
+		})
+	}
+
+	//on construit la nouvelle note en ne gardant que les propriétés qui nous intéressent de la requête, et en attribuant des valeurs par défaut selon le besoin
+	const note = {
+		content: body.content,
+		important : body.important || false, // si important est undefined -> false
+		date: new Date(),
+		id : generateId(),
+	}
+	
+	
+
+	notes = notes.concat(note)
+	response.json(note)
 })
 
 const PORT = 3001

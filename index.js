@@ -1,0 +1,1 @@
+console.log('Tu es à la racine du répertoire, change de dossier')
